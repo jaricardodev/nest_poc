@@ -1,13 +1,10 @@
-import { setup } from 'applicationinsights';
+import * as applicationinsights from 'applicationinsights';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { WINSTON_LOGGER_SERVICE } from './logger';
 
 async function bootstrap() {
-  if (process.env.NODE_ENV !== 'development') {
-    setup().start();
-  }
-
+  applicationinsights.setup().start();
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
   });
