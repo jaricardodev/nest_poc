@@ -1,12 +1,10 @@
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { WINSTON_LOGGER_SERVICE } from './logger';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AppService {
   constructor(
-    @Inject(WINSTON_LOGGER_SERVICE) private readonly logger: LoggerService,
-    private readonly configService: ConfigService,
+    @Inject(WINSTON_LOGGER_SERVICE) private readonly logger: LoggerService
   ) {}
 
   getHello(): string {
@@ -19,9 +17,6 @@ export class AppService {
     this.logger.error('Hello World from error!', {
       data: { whatever: 'test data' },
     });
-    this.logger.log(
-      this.configService.get<string>('APPLICATIONINSIGHTS_CONNECTION_STRING'),
-    );
     return 'Hello World!';
   }
 }
