@@ -48,7 +48,7 @@ jobs:
         yarn build
 
     - name: Zip all files for upload between jobs
-      run: zip --symlinks -r ${{ env.AZURE_WEBAPP_PACKAGE_PATH }} ./dist/*
+      run: zip --symlinks -r ${{ env.AZURE_WEBAPP_PACKAGE_PATH }} ./*
         
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v3
