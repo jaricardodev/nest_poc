@@ -1,23 +1,61 @@
 import * as winston from 'winston';
-import { LoggerService, LogLevel } from '@nestjs/common';
+import { Injectable, LoggerService, LogLevel } from '@nestjs/common';
 
 const WINSTON_LOGGER_SERVICE = 'WinstonLoggerService';
 
+@Injectable()
 class WinstonLoggerService implements LoggerService {
   private readonly logger: winston.Logger;
 
+  private readonly customLevels = {
+    levels: {
+      error: 0,
+      info: 1,
+      warn: 2,
+      debug: 3,
+      verbose: 4,
+    },
+    colors: {
+      error: 'red',
+      info: 'blue',
+      warn: 'yellow',
+      debug: 'green',
+      verbose: 'cyan'
+    }
+  };
+
+  private readonly consoleTransports = [
+    new winston.transports.Console({
+        level: 'debug',
+    }),
+  ];
+
   constructor() {
+    winston.addColors(this.customLevels.colors);
     this.logger = winston.createLogger({
-      transports: transports,
+      transports: this.consoleTransports,
+      format: winston.format.json(), 
+      levels: this.customLevels.levels
     });
   }
+
   verbose?(message: any, ...optionalParams: any[]) {
     this.logger.verbose(message, optionalParams);
   }
-  setLogLevels?(levels: LogLevel[]) {
-    throw new Error('Method not implemented.');
-  }
+  setLogLevels?(logLevels: LogLevel[]) {
+    const filteredWinstonLevels = logLevels.reduce((a, v) => (
+       v === 'log'
+        ? {
+          ...a, ['info']: this.customLevels.levels['info']
+        }
+        : {
+          ...a, [v]: this.customLevels.levels[v]
+      }
+    ), {});
 
+    this.logger.levels = filteredWinstonLevels;
+  }
+  
   warn(message: string, metadata: Record<any, any>): void {
     this.logger.warn(message, metadata);
   }
@@ -38,32 +76,3 @@ const WinstonLoggerServiceProvider = {
 };
 
 export { WinstonLoggerServiceProvider, WINSTON_LOGGER_SERVICE };
-
-const transports = [
-  new winston.transports.File({
-    filename: `logs/error.log`,
-    level: 'error',
-    format: winston.format.combine(
-      winston.format.timestamp(),
-      winston.format.json(),
-    ),
-  }),
-  // logging all level
-  new winston.transports.File({
-    filename: `logs/combined.log`,
-    format: winston.format.combine(
-      winston.format.timestamp(),
-      winston.format.json(),
-    ),
-  }),
-  new winston.transports.Console({
-    format: winston.format.combine(
-      winston.format.cli(),
-      winston.format.splat(),
-      winston.format.timestamp(),
-      winston.format.printf((info) => {
-        return `${info.timestamp} ${info.level}: ${info.message}`;
-      }),
-    ),
-  }),
-];
