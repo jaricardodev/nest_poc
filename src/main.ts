@@ -10,14 +10,16 @@ async function bootstrap() {
   }
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
-    logger: (process.env.LOG_LEVELS?.split(',') as LogLevel[]) ?? [
-      'error',
-      'log',
-      'warn',
-    ],
   });
   app.useLogger(app.get(WINSTON_LOGGER_SERVICE));
 
+  app.get(WINSTON_LOGGER_SERVICE).setLogLevels(
+    (process.env.LOG_LEVELS?.split(',') as LogLevel[]) ?? [
+      'error',
+      'log',
+      'warn',
+    ]
+  );
   await app.listen(process.env.PORT || 8080);
 }
 bootstrap();
