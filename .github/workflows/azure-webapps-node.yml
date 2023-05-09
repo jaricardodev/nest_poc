@@ -42,13 +42,13 @@ jobs:
         node-version: ${{ env.NODE_VERSION }}
         cache: 'npm'
 
-    - name: npm install, build, and test
+    - name: yarn install, build, and test
       run: |
         yarn install
         yarn build
 
     - name: Zip all files for upload between jobs
-      run: zip --symlinks -r ${{ env.AZURE_WEBAPP_PACKAGE_PATH }} ./*
+      run: zip --symlinks -r ${{ env.AZURE_WEBAPP_PACKAGE_PATH }} ./dist/*
         
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v3
