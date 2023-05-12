@@ -4,7 +4,7 @@ import { WINSTON_LOGGER_SERVICE } from './logger';
 @Injectable()
 export class AppService {
   constructor(
-    @Inject(WINSTON_LOGGER_SERVICE) private readonly logger: LoggerService
+    @Inject(WINSTON_LOGGER_SERVICE) private readonly logger: LoggerService,
   ) {}
 
   getHello(): string {
