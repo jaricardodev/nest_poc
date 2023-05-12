@@ -20,13 +20,13 @@ class WinstonLoggerService implements LoggerService {
       info: 'blue',
       warn: 'yellow',
       debug: 'green',
-      verbose: 'cyan'
-    }
+      verbose: 'cyan',
+    },
   };
 
   private readonly consoleTransports = [
     new winston.transports.Console({
-        level: 'debug',
+      level: 'debug',
     }),
   ];
 
@@ -34,8 +34,8 @@ class WinstonLoggerService implements LoggerService {
     winston.addColors(this.customLevels.colors);
     this.logger = winston.createLogger({
       transports: this.consoleTransports,
-      format: winston.format.json(), 
-      levels: this.customLevels.levels
+      format: winston.format.json(),
+      levels: this.customLevels.levels,
     });
   }
 
@@ -43,19 +43,23 @@ class WinstonLoggerService implements LoggerService {
     this.logger.verbose(message, optionalParams);
   }
   setLogLevels?(logLevels: LogLevel[]) {
-    const filteredWinstonLevels = logLevels.reduce((a, v) => (
-       v === 'log'
-        ? {
-          ...a, ['info']: this.customLevels.levels['info']
-        }
-        : {
-          ...a, [v]: this.customLevels.levels[v]
-      }
-    ), {});
+    const filteredWinstonLevels = logLevels.reduce(
+      (a, v) =>
+        v === 'log'
+          ? {
+              ...a,
+              ['info']: this.customLevels.levels['info'],
+            }
+          : {
+              ...a,
+              [v]: this.customLevels.levels[v],
+            },
+      {},
+    );
 
     this.logger.levels = filteredWinstonLevels;
   }
-  
+
   warn(message: string, metadata: Record<any, any>): void {
     this.logger.warn(message, metadata);
   }
