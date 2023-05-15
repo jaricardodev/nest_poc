@@ -1,20 +1,17 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
-import { SecretsService } from './secrets/secrets.service';
 
 @Controller()
 export class AppController {
-  constructor(
-    private readonly appService: AppService,
-    private readonly secretsService: SecretsService,
-  ) {
-    secretsService.getSecret('test-secret').then((secret) => {
-      console.log(secret);
-    });
-  }
+  constructor(private readonly appService: AppService) {}
 
   @Get()
   getHello(): string {
     return this.appService.getHello();
+  }
+
+  @Get('/secret')
+  async getSecret(): Promise<string> {
+    return await this.appService.getSecret();
   }
 }
