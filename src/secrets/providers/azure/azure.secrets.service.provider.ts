@@ -1,16 +1,16 @@
-import { WINSTON_LOGGER_SERVICE } from '../logger';
-import { Inject, Injectable, LoggerService } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DefaultAzureCredential } from '@azure/identity';
 import { SecretClient } from '@azure/keyvault-secrets';
+import { SecretsService } from '../../secrets.service.interface';
+
+const AZURE_SECRETS_SERVICE = 'AzureSecretsService';
 
 @Injectable()
-export class SecretsService {
-  private credential: DefaultAzureCredential;
-  private vaultUrl: string;
+class AzureSecretsService implements SecretsService {
+  private readonly credential: DefaultAzureCredential;
+  private readonly vaultUrl: string;
 
-  constructor(
-    @Inject(WINSTON_LOGGER_SERVICE) private readonly logger: LoggerService,
-  ) {
+  constructor() {
     this.credential = new DefaultAzureCredential();
     const vaultName = process.env['AZ_KEY_VAULT_NAME'] || '';
     this.vaultUrl = `https://${vaultName}.vault.azure.net`;
@@ -22,3 +22,10 @@ export class SecretsService {
     return secret.value;
   }
 }
+
+const AzureSecretsServiceProvider = {
+  provide: AZURE_SECRETS_SERVICE,
+  useClass: AzureSecretsService,
+};
+
+export { AzureSecretsServiceProvider, AZURE_SECRETS_SERVICE };
